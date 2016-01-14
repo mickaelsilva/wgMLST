@@ -2,13 +2,12 @@
 tools developed to perform a bacterial wgMLST
 
 Dependencies:
-* drmma	http://drmaa-python.github.io/
+* (for the cluster version) drmma	http://drmaa-python.github.io/
 * biopython http://biopython.org/wiki/Main_Page
 * HTSeq http://www-huber.embl.de/users/anders/HTSeq/doc/overview.html
 * BLAST
 * Prodigal http://prodigal.ornl.gov/
-* CommonFastaFunctions.py
-* Create_Genome_Blastdb.py
+
 
 
 suggested folder structure:
@@ -18,6 +17,17 @@ suggested folder structure:
  2. sub folder - genes - all genes fasta files
 
 **lists of files MUST contain FULL PATH!**
+**be sure your fasta files are formated in UNIX, for quick conversion use dos2unix http://linuxcommand.org/man_pages/dos2unix1.html **
+
+How to perform a complete wgMLST:
+
+1. Concatenate gene sequences in a single fasta file (you can use the .ffn files as source of genes sequences available at ftp://ftp.ncbi.nih.gov/genomes/archive/old_genbank/Bacteria/
+2. Run CreateSchema.py over the concatenated single fasta file, save the gene .fasta files inside a new "genes" folder
+3. Create a list .txt file containing one gene file per line with full paths (you can use this bash line "find /home/.../SchemaFolder/* > listgenes.txt"
+4. Create a list .txt file containing one draft genome file per line with full paths (similar to 3.)
+5. Run the allelecall script (local or cluster version) using the list files created at 3. and 4.
+6. Run the whichRepeatedLoci.py over the contigsInfo.txt output from step 5.
+7. Run the XpressGetCleanLoci4Phyloviz.py using the outputs from 5. and 6.
 
 =============
 #CreateSchema.py
@@ -27,7 +37,7 @@ dependencies:
 * biopython
 * HTSeq
 
-Given a concatenated ffn file, removes genes that are substring of bigger genes and genes smaller than choosen in the -g parameter. Blasts all the genes against each other and saves the bigger genes, removing the smaller genes with a 0.6>BSR
+Given a concatenated ffn file, removes genes that are substring of bigger genes and genes smaller than chosen in the -g parameter. Blasts all the genes against each other and saves the bigger genes, removing the smaller genes with a 0.6>BSR
 
 	% CreateSchema.py -i allffnfile.fasta -g 200
 	
@@ -39,11 +49,11 @@ Output:
 
 
 =============
-##alleleCalling_probe_based_main2.py
+##alleleCalling_ORFbased_protein_main2_local.py
 
 Given a list of genomes and a list of alleles, the program will perform an allele call using the defined alleles as probes
 
-	% alleleCalling_probe_based_main2.py -i listGenomes.txt -g listGenes.txt -o outputFileName.txt -p True
+	% alleleCalling_ORFbased_protein_main2_local.py -i listGenomes.txt -g listGenes.txt -o outputFileName.txt -p /home/user/prodigal/Prodigal-2.60/prodigal
 	
 `-i` path to the list of genomes file
 
@@ -51,47 +61,7 @@ Given a list of genomes and a list of alleles, the program will perform an allel
 
 `-o` output file name
 
-`-p` (optional and recomended) parameter to return a phyloviz output file type and a statistics.txt file - Default = True
-
-short example statistics file:
-
-* EXC - allele has exact match (100% identity)
-* NA - new allele found
-* undefined - allele found is contained in an already defined allele but match size is more than 2 bases different from the defined allele
-* LNF - locus not found
-* LOT - locus is on the tip of the contig of the genome
-* PLOT - locus is possibly on the tip of the contig of the genome
-* incomplete - match size is less than 80% of the allele size and identity% is smaller than 50%
-* small - match size is less than 50% of the allele size
-```
-Stats:	EXC	NA	undefined	LNF	LOT	PLOT	incomplete	small
-NC_017162.fna	1026	4	0	0	0	0	0	0	
-NC_009085.fna	248	1	0	0	0	0	0	0	
-
-```
-short example phyloviz file output:
-```
-FILE	Unique_Acinetobacter_baumannii_1656-2.1.peg.gi_384132717_ref_YP_005515329.1_.fasta	Unique_Acinetobacter_baumannii_1656-2.1.peg.gi_384133246_ref_YP_005515858.1_.fasta
-10_S10_L001.fasta	7	1
-2_S12_L001.fasta	7	1
-7_S7_L001.fasta	NA6:-8	NA5:-7
-```
-
-=============
-##alleleCalling_ORFbased_protein_main2.py
-
-Given a list of genomes and a list of alleles, the program will perform an allele call using the defined alleles translated aminoacid sequences and the ORF translated sequences of a genome obtained using Prodigal
-
-	% alleleCalling_ORFbased_protein_main2.py -i listgenomes.txt -g listgenes.txt -o output_file_name.txt -p True
-	
-`-i` path to the list of genomes file
-
-`-g` path to the list of alleles file
-
-`-o` output file name
-
-`-p` (optional and recomended) parameter to return a phyloviz output file type and a statistics.txt file - Default = True
-
+`-p` Prodigal exec file full path 
 
 short example statistics file:
 
@@ -110,7 +80,7 @@ NC_017162.fna	892	2319	1909	0	0	104	5	37
 NC_011586.fna	1563	1697	1809	0	0	116	6	75	
 ```
 
-short example phyloviz file output:
+short example file output:
 
 ```
 FILE	gi_126640115_ref_NC_009085.1_:1032446-1033294.fasta	gi_126640115_ref_NC_009085.1_:103903-104649.fasta	gi_126640115_ref_NC_009085.1_:1056402-1057004.fasta	gi_12664011510_S10_L001.fasta
@@ -118,41 +88,62 @@ NC_017162.fna	INF-2	LNF
 NC_011586.fna	INF-3	LNF
 NC_011595.fna	3	LNF
 ```
-
 =============
-## GetCleanLoci4Phyloviz.py
+## whichParalogs.py
+
+Using the contigsInfo.txt output from the allele call, check if the same CDS is being called for different locus
+
+	% whichRepeatedLoci.py -i contigsInfo.txt
+
+`-i` contigsInfo.txt file
+
+short example file output:
+
+* overrepresented - number of times a CDS on this locus as been found in another locus
+* problems - non exact match or infered allele found
+
+```
+gene	overrepresented	problems	total
+gi_22536185_ref_NC_004116.1_:c2045049-2043157.fasta	1	2	3
+gi_406708523_ref_NC_018646.1_:c1944065-1941807.fasta	1	2	3
+
+```
+
+In this example the allele call was ran for 3 genomes. The locus presented had an exact match or an infered allele for one genome, while 2 genomes had issues or didn't have the locus. The CDS returned for the first locus is present in another locus, while the same happens for the second locus, from which we may clearly state that a locus is being overrepresented by this two locus since both are catching the same CDS.
+=============
+## XpressGetCleanLoci4Phyloviz.py
 
 Dependencies:
-* matplotlib
 * numpy
 
 Clean a raw output file from an allele calling to a phyloviz readable file. Keep the locus with only Exact matches or new alleles found for all genomes.
 
 Basic usage:
 
-	% GetCleanLoci4Phyloviz.py -i rawDataToClean.txt -g cleanedOutput.txt
+	% XpressGetCleanLoci4Phyloviz.py -i rawDataToClean.txt -g cleanedOutput.txt -r removeLocusList.txt
 	
 `-i` raw output file from an allele calling
 
 `-g` name of the clean file
 
-`-o` information file, tab separated
+`-r` (optional) list of genes to remove one per line, advised to use the detected overrepresented genes
 
-`-p` which property # to group by
+=============
+## testQualityGenomes2.py
 
-`-s` which group value to select by
+Usefull to determine a core genome and remove genomes that may have technical issues. The algorithm description is the following:
 
-Using an info file for a specific genome selection:
+1. For each allelic profile generated for a draft genome , let nl be the number of loci that are not present in the allelic profile but are present in 99% (97% if total number of genomes under 500 and 95% if under 200) or more of the remaining allelic profiles;
+2. For and exclusion threshold (et) remove all allelic profiles that have nml greater than et. If no allelic profiles are removed, proceed to Step 4;
+3. Return to Step 1.
+4. The locus present in all the draft genomes for the remaining allelic profiles, are defined as the cgMLST schema for the exclusion threshold (et)
 
-	% GetCleanLoci4Phyloviz.py -i rawDataToClean.txt -g cleanedOutput.txt -o info.tsv -p 4 -s 3
+	% testQualityGenomes2.py -i out.txt -n 12 -t 250
 	
-In this example we will be using the property #4 (serotype) and all genomes that have a serotype "3". Other genome profiles will be ignored.
-	
-short example info file:
+`-i` raw output file from an allele calling
 
-```	
-file	ST	CC	serotype	study
-NC_003028.fna	205	34	4	completegenome
-NC_003098.fna	595	378	2	completegenome
-...
-```	
+`-n` maximum number of iterations, each iteration removes a set of genomes over the threshold and recalculates all variables
+
+`-t` maximum threshold, will start at 5 increasing in a step of 5 until t
+
+The output consists in a set of plots per iteration and a removedGenomes2.txt file where its informed of which genomes are removed per threshold when it reaches a stable point (no more genomes are removed)

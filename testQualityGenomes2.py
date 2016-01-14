@@ -1,11 +1,9 @@
-import sys
 import csv
 import numpy as np
 from numpy import array
 import argparse
 import collections
 from collections import OrderedDict
-#import HTSeq
 import matplotlib.pyplot as plt
 
 
@@ -79,8 +77,10 @@ def presence3(d2,ythreshold,vector):
 			row+=1
 		
 		value=float(d2d.shape[0]-notfound)/float(d2d.shape[0])
-		if len(genomeslist)>100:
+		if len(genomeslist)>500:
 			xthreshold=0.99
+		elif len(genomeslist)>200:
+			xthreshold=0.97
 		else:
 			xthreshold=0.95
 
@@ -118,13 +118,17 @@ def presence3(d2,ythreshold,vector):
 	print len (totals)
 	
 	
+	#print "this genomes have more than " +str(ythreshold)+" bad calls in locus present in more than "+str(xthreshold*100)+"% of the genomes :"
+	#for x in reallybadgenomes:
+	#	print x
+	
+
 	
 	d2d=d2d.T
 	
 	
 	#number of used genomes
 	vector[0].append(len(genomeslist))
-	#print vector
 	
 	#number of loci at 95%
 	vector[1].append(plus95)
@@ -198,11 +202,13 @@ def removegenomes(d2a,shortGenomeList):
 	while rowid< d2a.shape[0]:
 		inside=False
 		for genome in shortGenomeList:
+			#print genome
 			
 			if genome == d2a[rowid][0] :	
 				inside=True
 				break
 
+			#columnid+=1
 		if not inside:
 			d2a=np.delete(d2a, rowid, axis=0)
 			deleted+=1
@@ -292,7 +298,10 @@ def clean (inputfile,totaldeletedgenes,shortGenomeList,genesDirect,rangeFloat,to
 		
 		i+=1
 		
-
+	#plt.show()
+	#plt.close()
+	
+	
 	matrix2,genomeslist2=presence (d2)
 	
 	
@@ -301,7 +310,7 @@ def clean (inputfile,totaldeletedgenes,shortGenomeList,genesDirect,rangeFloat,to
 	
 	#run a function that returns a matrix with 0 and 1 depending on wheter the call is a Locus Not Found or not
 	
-	with open("removedGenomes2.txt", "a") as f:
+	with open("removedGenomes.txt", "a") as f:
 		f.write("using a threshold of "+ str(ythreshold)+" at iteration number " +str(i)+"\n")
 		
 		for x in removedlistgenomes:
@@ -362,6 +371,7 @@ def main():
 
 		
 		values = set(map(lambda x:x[property], oldlist))
+		#print values
 		newlist = [[y[0] for y in oldlist if y[property]==x] for x in values]
 	
 		shortGenomeList=[]
@@ -393,6 +403,7 @@ def main():
 	except:		
 		pass
 	
+	#print matrix
 	
 	allresults=[]
 	threshold=5
