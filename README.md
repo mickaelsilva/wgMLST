@@ -33,9 +33,9 @@ How to perform a complete wgMLST:
 #CreateSchema.py
 
 dependencies:
-* CommonFastaFunctions.py
 * biopython
 * HTSeq
+* BLAST
 
 Given a concatenated ffn file, removes genes that are substring of bigger genes and genes smaller than chosen in the -g parameter. Blasts all the genes against each other and saves the bigger genes, removing the smaller genes with a 0.6>BSR
 
@@ -89,7 +89,7 @@ NC_011586.fna	INF-3	LNF
 NC_011595.fna	3	LNF
 ```
 =============
-## whichParalogs.py
+## whichRepeatedLoci.py
 
 Using the contigsInfo.txt output from the allele call, check if the same CDS is being called for different locus
 
@@ -108,8 +108,8 @@ gi_22536185_ref_NC_004116.1_:c2045049-2043157.fasta	1	2	3
 gi_406708523_ref_NC_018646.1_:c1944065-1941807.fasta	1	2	3
 
 ```
-
 In this example the allele call was ran for 3 genomes. The locus presented had an exact match or an infered allele for one genome, while 2 genomes had issues or didn't have the locus. The CDS returned for the first locus is present in another locus, while the same happens for the second locus, from which we may clearly state that a locus is being overrepresented by this two locus since both are catching the same CDS.
+
 =============
 ## XpressGetCleanLoci4Phyloviz.py
 
@@ -137,6 +137,8 @@ Usefull to determine a core genome and remove genomes that may have technical is
 2. For and exclusion threshold (et) remove all allelic profiles that have nml greater than et. If no allelic profiles are removed, proceed to Step 4;
 3. Return to Step 1.
 4. The locus present in all the draft genomes for the remaining allelic profiles, are defined as the cgMLST schema for the exclusion threshold (et)
+
+Usage:
 
 	% testQualityGenomes2.py -i out.txt -n 12 -t 250
 	
