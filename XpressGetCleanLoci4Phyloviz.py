@@ -1,14 +1,8 @@
-import sys
 import csv
 import numpy as np
 from numpy import array
 import argparse
 import collections
-from collections import OrderedDict
-#import HTSeq
-import matplotlib.pyplot as plt
-
-
 
 def clean (inputfile,outputfile,totaldeletedgenes,rangeFloat,toremovegenes):
 	
