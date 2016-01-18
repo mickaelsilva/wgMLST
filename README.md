@@ -58,7 +58,7 @@ Output:
 
 
 =============
-##alleleCalling_ORFbased_protein_main2_local.py (local allele calling)
+##alleleCalling_ORFbased_protein_main2_local.py (local allele calling, uses the maximum number of local cores - 2)
 
 Given a list of genomes and a list of alleles, the program will perform an allele call using the defined alleles as probes
 
@@ -158,6 +158,6 @@ Usage:
 
 `-t` maximum threshold, will start at 5 increasing in a step of 5 until t
 
-The output consists in a set of plots per iteration and a removedGenomes2.txt file where its informed of which genomes are removed per threshold when it reaches a stable point (no more genomes are removed)
+The output consists in a set of plots per iteration and a removedGenomes.txt file where its informed of which genomes are removed per threshold when it reaches a stable point (no more genomes are removed)
 
 Example of an output can be seen [here] (http://i.imgur.com/uQDNNkb.png) . This examples uses an original set of 1042 genomes and a scheme of 5266 loci, using a parameter `-n` of 12 and `-t` of 300.
