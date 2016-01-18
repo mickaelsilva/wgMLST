@@ -14,12 +14,12 @@ def main(input_file,tempPath,prodigal_path):
 	contigsFasta=input_file
 	
 	basepath=tempPath
-	print basepath
+	#print basepath
 	
         # ------------ #
         # RUN PRODIGAL #
-        # ------------ #  #/scratch/NGStools/prodigal-2.50/prodigal -i /scratch/spneumoniae_600/ERR067978/velvet_assembly/contigs.fa -c -m -g 11 -p single -f sco -q > test_all.txt
-	#prodigal_path='/home/msilva/Desktop/prodigal/Prodigal-2.60/prodigal'
+        # ------------ #  
+
 	proc = subprocess.Popen([prodigal_path, '-i', contigsFasta, '-c', '-m', '-g', '11', '-p', 'single', '-f', 'sco', '-q'], stdout=subprocess.PIPE)
 	
 	cdsDict = {}
@@ -76,14 +76,14 @@ def main(input_file,tempPath,prodigal_path):
 	#print cdsDict
 	
 	filepath=os.path.join(basepath,str(os.path.basename(contigsFasta))+"_ORF.txt")
-	print filepath
+
 	with open(filepath, 'wb') as f:
 		var = cdsDict
 		pickle.dump(var, f)
 		
 		
 	blastdbpath=os.path.join(basepath,str(os.path.basename(contigsFasta)))
-	print blastdbpath
+
 	#Create_Blastdb2( blastdbpath )
 	print "done"
 

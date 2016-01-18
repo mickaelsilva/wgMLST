@@ -373,9 +373,7 @@ def main():
 				
 			
 		gOutFile = os.path.dirname( "./")
-		gOutFile2 = os.path.dirname( "./")
 		gOutFile += args.o
-		gOutFile2 += "contigsInfo.txt"
 		statswrite='Stats:\tEXC\tINF\tLNF\tLOT\tPLOT\tNIPL\tALM\tASM'
 		i=0
 		genome=0
@@ -396,7 +394,7 @@ def main():
 		with open("stastics.txt", 'a') as f:
 			f.write(str(statswrite))
 		
-		with open(gOutFile2, 'a') as f:
+		with open("contigsInfo.txt", 'a') as f:
 			f.write(str(finalphylovinput2))
 			
 	except Exception as e:

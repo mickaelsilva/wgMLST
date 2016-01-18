@@ -136,7 +136,7 @@ Basic usage:
 
 `-g` name of the clean file
 
-`-r` (optional) list of genes to remove one per line, advised to use the detected overrepresented genes
+`-r` (optional) list of genes to remove, one per line, advised to use the detected overrepresented genes from whichRepeatedLoci.py
 
 =============
 ## testQualityGenomes2.py

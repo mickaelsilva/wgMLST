@@ -490,7 +490,7 @@ def main(input_file,temppath):
 				print rightmatchContig,leftmatchContig
 				
 				
-				# get extra space to the right and left between the allele and match
+				# get extra space to the right and left between the allele and match and check if it's still inside the contig
 				
 				rightmatchAllele=geneLen-(int(match.query_end)*3)	
 				leftmatchAllele=(int(match.query_start)*3)
