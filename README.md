@@ -58,7 +58,7 @@ Output:
 
 
 =============
-##alleleCalling_ORFbased_protein_main2_local.py
+##alleleCalling_ORFbased_protein_main2_local.py (local allele calling)
 
 Given a list of genomes and a list of alleles, the program will perform an allele call using the defined alleles as probes
 
