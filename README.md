@@ -16,9 +16,10 @@ suggested folder structure:
  1. sub folder - genomes - all genomes fasta files
  2. sub folder - genes - all genes fasta files
 
-**lists of files MUST contain FULL PATH!**
-**be sure your fasta files are formated in UNIX, for quick conversion use dos2unix http://linuxcommand.org/man_pages/dos2unix1.html **
-**gene files must represent a complete Coding Domain Sequence, with starting codon and stop codon according to the [NCBI table 11] (http://www.ncbi.nlm.nih.gov/Taxonomy/Utils/wprintgc.cgi)**
+**Notice!**
+- lists of files MUST contain FULL PATH!
+- be sure your fasta files are formated in UNIX, for quick conversion use dos2unix http://linuxcommand.org/man_pages/dos2unix1.html
+- gene files must represent a complete Coding Domain Sequence, with starting codon and stop codon according to the [NCBI table 11] (http://www.ncbi.nlm.nih.gov/Taxonomy/Utils/wprintgc.cgi)
 
 How to perform a complete wgMLST:
 
