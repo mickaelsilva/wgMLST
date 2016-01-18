@@ -6,7 +6,7 @@ Dependencies:
 * biopython http://biopython.org/wiki/Main_Page
 * HTSeq http://www-huber.embl.de/users/anders/HTSeq/doc/overview.html
 * BLAST
-* Prodigal http://prodigal.ornl.gov/
+* Prodigal (tested with 2.6.0) https://github.com/hyattpd/prodigal/releases/
 
 
 
@@ -16,12 +16,13 @@ suggested folder structure:
  1. sub folder - genomes - all genomes fasta files
  2. sub folder - genes - all genes fasta files
 
-**lists of files MUST contain FULL PATH!**
-**be sure your fasta files are formated in UNIX, for quick conversion use dos2unix http://linuxcommand.org/man_pages/dos2unix1.html **
+**lists of files MUST contain FULL PATH!
+be sure your fasta files are formated in UNIX, for quick conversion use dos2unix http://linuxcommand.org/man_pages/dos2unix1.html
+gene files must represent a complete Coding Domain Sequence, with starting codon and stop codon according to the [NCBI table 11] (http://www.ncbi.nlm.nih.gov/Taxonomy/Utils/wprintgc.cgi) **
 
 How to perform a complete wgMLST:
 
-1. Concatenate gene sequences in a single fasta file (you can use the .ffn files as source of genes sequences available at ftp://ftp.ncbi.nih.gov/genomes/archive/old_genbank/Bacteria/
+1. Concatenate gene sequences in a single fasta file (you can use the .ffn files as source of genes sequences available [here] (ftp://ftp.ncbi.nih.gov/genomes/archive/old_genbank/Bacteria/) )
 2. Run CreateSchema.py over the concatenated single fasta file, save the gene .fasta files inside a new "genes" folder
 3. Create a list .txt file containing one gene file per line with full paths (you can use this bash line "find /home/<path>/SchemaFolder/* > listgenes.txt"
 4. Create a list .txt file containing one draft genome file per line with full paths (similar to 3.)
