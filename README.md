@@ -2,11 +2,11 @@
 tools developed to perform a bacterial wgMLST
 
 Dependencies:
-* (for the cluster version) drmma	http://drmaa-python.github.io/
-* biopython http://biopython.org/wiki/Main_Page
-* HTSeq http://www-huber.embl.de/users/anders/HTSeq/doc/overview.html
+* (for the cluster version) [drmma]	(http://drmaa-python.github.io/)
+* [biopython] (http://biopython.org/wiki/Main_Page)
+* [HTSeq] (http://www-huber.embl.de/users/anders/HTSeq/doc/overview.html)
 * BLAST
-* Prodigal (tested with 2.6.0) https://github.com/hyattpd/prodigal/releases/
+* [Prodigal] (https://github.com/hyattpd/prodigal/releases/) (tested with v. 2.6.0)
 
 
 
@@ -16,7 +16,7 @@ suggested folder structure:
  1. sub folder - genomes - all genomes fasta files
  2. sub folder - genes - all genes fasta files
 
-**lists of files MUST contain FULL PATH! **
+**lists of files MUST contain FULL PATH!**
 **be sure your fasta files are formated in UNIX, for quick conversion use dos2unix http://linuxcommand.org/man_pages/dos2unix1.html **
 **gene files must represent a complete Coding Domain Sequence, with starting codon and stop codon according to the [NCBI table 11] (http://www.ncbi.nlm.nih.gov/Taxonomy/Utils/wprintgc.cgi)**
 
