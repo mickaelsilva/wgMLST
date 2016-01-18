@@ -18,14 +18,14 @@ suggested folder structure:
 
 **Notice!**
 - lists of files MUST contain FULL PATH!
-- be sure your fasta files are formated in UNIX, for quick conversion use dos2unix http://linuxcommand.org/man_pages/dos2unix1.html
-- gene files must represent a complete Coding Domain Sequence, with starting codon and stop codon according to the [NCBI table 11] (http://www.ncbi.nlm.nih.gov/Taxonomy/Utils/wprintgc.cgi)
+- be sure your fasta files are formated in UNIX, for quick conversion use [dos2unix] (http://linuxcommand.org/man_pages/dos2unix1.html)
+- allele sequence of the gene files must represent a complete Coding Domain Sequence, with starting codon and stop codon according to the [NCBI table 11] (http://www.ncbi.nlm.nih.gov/Taxonomy/Utils/wprintgc.cgi)
 
 How to perform a complete wgMLST:
 
 1. Concatenate gene sequences in a single fasta file (you can use the .ffn files as source of genes sequences available [here] (ftp://ftp.ncbi.nih.gov/genomes/archive/old_genbank/Bacteria/) )
 2. Run CreateSchema.py over the concatenated single fasta file, save the gene .fasta files inside a new "genes" folder
-3. Create a list .txt file containing one gene file per line with full paths (you can use this bash line "find /home/<path>/SchemaFolder/* > listgenes.txt"
+3. Create a list .txt file containing one gene file per line with full paths (you can use this bash line `find /home/<path>/SchemaFolder/* > listgenes.txt`
 4. Create a list .txt file containing one draft genome file per line with full paths (similar to 3.)
 5. Run the allelecall script (local or cluster version) using the list files created at 3. and 4.
 6. Run the whichRepeatedLoci.py over the contigsInfo.txt output from step 5.
@@ -157,3 +157,5 @@ Usage:
 `-t` maximum threshold, will start at 5 increasing in a step of 5 until t
 
 The output consists in a set of plots per iteration and a removedGenomes2.txt file where its informed of which genomes are removed per threshold when it reaches a stable point (no more genomes are removed)
+
+Example of an output can be seen [here] (http://i.imgur.com/uQDNNkb.png) . This examples uses an original set of 1042 genomes and a scheme of 5266 loci, using a parameter `-n` of 12 and `-t` of 300.
