@@ -2,7 +2,7 @@
 tools developed to perform a bacterial wgMLST
 
 Dependencies:
-* (for the cluster version) [drmma]	(http://drmaa-python.github.io/)
+* (only for the cluster version) [drmma]	(http://drmaa-python.github.io/)
 * [biopython] (http://biopython.org/wiki/Main_Page)
 * [HTSeq] (http://www-huber.embl.de/users/anders/HTSeq/doc/overview.html)
 * BLAST
@@ -24,7 +24,7 @@ suggested folder structure:
 
 How to perform a complete wgMLST:
 
-1. Concatenate gene sequences in a single fasta file. You can use the .ffn files as source of genes sequences available [here](ftp://ftp.ncbi.nih.gov/genomes/archive/old_genbank/Bacteria/)
+1. Concatenate gene sequences in a single fasta file. You can use the .ffn files as source of genes sequences available [here] (http://ftp.ncbi.nih.gov/genomes/archive/old_genbank/Bacteria/)
 2. Run CreateSchema.py over the concatenated single fasta file, save the gene .fasta files inside a new "genes" folder
 3. Create a list .txt file containing one gene file per line with full paths (you can use this bash line `find /home/<path>/SchemaFolder/* > listgenes.txt`
 4. Create a list .txt file containing one draft genome file per line with full paths (similar to 3.)
@@ -79,9 +79,9 @@ short example statistics file:
 * LNF - locus not found
 * LOT - locus on the tip of the contig
 * PLOT - locus possibly on the tip of the contig (uses the most frequent allele size to compare)
-* NIPL - Non informative paralog locus - two or more good blast matches for the protein
-* ALM - allele much larger than gene size mode - match > gene mode size + gene mode size * 0.2
-* ASM - allele much smaller than gene size mode - match < gene mode size - gene mode size * 0.2
+* NIPL - Non informative paralog locus (two or more good blast matches for the protein)
+* ALM - allele much larger than gene size mode (match CDS lenght> gene mode length + gene mode length * 0.2)
+* ASM - allele much smaller than gene size mode (match CDS lenght < gene mode length - gene mode length * 0.2)
 
 ```
 Stats:	EXC	INF	LNF	LOT	PLOT	NIPL	ALM	ASM
@@ -105,7 +105,7 @@ Using the contigsInfo.txt output from the allele call, check if the same CDS is 
 	% whichRepeatedLoci.py -i contigsInfo.txt
 
 `-i` contigsInfo.txt file
-"find /home/.
+
 short example file output:
 
 * overrepresented - number of times a CDS on this locus as been found in another locus
