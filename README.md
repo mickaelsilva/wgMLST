@@ -24,7 +24,7 @@ suggested folder structure:
 
 How to perform a complete wgMLST:
 
-1. Concatenate gene sequences in a single fasta file. You can use the .ffn files as source of genes sequences available [here] (http://ftp.ncbi.nih.gov/genomes/archive/old_genbank/Bacteria/)
+1. Concatenate gene sequences in a single fasta file. You can use the .ffn files as source of genes sequences available [here](ftp://ftp.ncbi.nih.gov/genomes/archive/old_genbank/Bacteria/)
 2. Run CreateSchema.py over the concatenated single fasta file, save the gene .fasta files inside a new "genes" folder
 3. Create a list .txt file containing one gene file per line with full paths (you can use this bash line `find /home/<path>/SchemaFolder/* > listgenes.txt`
 4. Create a list .txt file containing one draft genome file per line with full paths (similar to 3.)
