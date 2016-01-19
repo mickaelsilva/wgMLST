@@ -160,7 +160,7 @@ def main():
 		for genome in listOfGenomes:
 			jt = s.createJobTemplate()
 			jt.remoteCommand = os.path.join(os.getcwd(), 'runProdigal.py')
-			jt.args = [str(genome),basepath]
+			jt.args = [str(genome),basepath,prodigalPath]
 			jt.joinFiles=True
 			jt.nativeSpecification='-V'
 			jobid = s.runJob(jt)

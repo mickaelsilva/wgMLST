@@ -14,6 +14,7 @@ def main():
 	try:
 		input_file = sys.argv[1]
 		tempPath = sys.argv[2]
+		prodigal_path = sys.argv[3]
 	except IndexError:
 		print "usage: list_pickle_obj"
 	
@@ -24,8 +25,8 @@ def main():
 	
         # ------------ #
         # RUN PRODIGAL #
-        # ------------ #  #/scratch/NGStools/prodigal-2.50/prodigal -i /scratch/spneumoniae_600/ERR067978/velvet_assembly/contigs.fa -c -m -g 11 -p single -f sco -q > test_all.txt
-	prodigal_path='prodigal'
+        # ------------ #  
+	#prodigal_path='prodigal'
 	proc = subprocess.Popen([prodigal_path, '-i', contigsFasta, '-c', '-m', '-g', '11', '-p', 'single', '-f', 'sco', '-q'], stdout=subprocess.PIPE)
 	
 	cdsDict = {}
@@ -79,7 +80,6 @@ def main():
 		contigTag=contigTag[:i]
 
 		cdsDict[contigTag.replace("\r","")] =tempList
-	#print cdsDict
 	
 	filepath=os.path.join(basepath,str(os.path.basename(contigsFasta))+"_ORF.txt")
 	print filepath
@@ -90,7 +90,6 @@ def main():
 		
 	blastdbpath=os.path.join(basepath,str(os.path.basename(contigsFasta)))
 	print blastdbpath
-	#Create_Blastdb2( blastdbpath )
 	print "done"
 
 	return True
