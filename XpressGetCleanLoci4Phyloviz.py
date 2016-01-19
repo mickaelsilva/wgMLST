@@ -119,7 +119,7 @@ def clean (inputfile,outputfile,totaldeletedgenes,rangeFloat,toremovegenes):
 	#if deleted==0:
 	print str(lnfdel),str(balldel)
 	print "deleted : %s genes" % totaldeletedgenes
-	print "total genes remaining : "+ str(rowid)
+	print "total genes remaining : "+ str(rowid-2)
 	#else:
 		#clean(outputfile,outputfile,totaldeletedgenes,shortGenomeList,genesDirect,rangeFloat)
 	

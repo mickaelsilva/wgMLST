@@ -129,8 +129,6 @@ Both locus presented had an exact match or an infered allele for one genome, whi
 =============
 ## XpressGetCleanLoci4Phyloviz.py
 
-Dependencies:
-* numpy
 
 Clean a raw output file from an allele calling to a phyloviz readable file. Keep the locus with only Exact matches or new alleles found for all genomes.
 
@@ -146,6 +144,9 @@ Basic usage:
 
 =============
 ## testQualityGenomes2.py
+
+Dependencies:
+* [matplotlib] (http://matplotlib.org/)
 
 Usefull to determine a core genome and remove genomes that may have technical issues. The algorithm description is the following:
 
