@@ -62,11 +62,11 @@ Output:
 
 Given a list of genomes and a list of alleles, the program will perform an allele call using the defined alleles as probes. Prodigal is run on the genomes and the genes, ensuring that only complete CDSs are used.
 
-Performing a local allele call (uses the maximum number of local cores minus 2):
+Performing a **local** allele call (uses the maximum number of local cores minus 2, one per gene):
 
 	% alleleCalling_ORFbased_protein_main2_local.py -i listGenomes.txt -g listGenes.txt -o outputFileName.txt -p /home/user/prodigal/Prodigal-2.60/prodigal
 
-Performing a cluster allele call (uses the maximum number of local cores minus 2):
+Performing a **cluster** allele call (uses all available cores, one per gene):
 
 	% alleleCalling_ORFbased_protein_main2.py -i listGenomes.txt -g listGenes.txt -o outputFileName.txt -p /home/user/prodigal/Prodigal-2.60/prodigal
 	
