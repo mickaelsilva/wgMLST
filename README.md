@@ -124,7 +124,7 @@ gi_22536185_ref_NC_004116.1_:c2045049-2043157.fasta	1	2	3
 gi_406708523_ref_NC_018646.1_:c1944065-1941807.fasta	1	2	3
 
 ```
-In this [example] (http://i.imgur.com/ABvr4YL.png) the allele call was ran for 3 genomes.
+In this example the allele call was ran for 3 genomes.
 Both locus presented had an exact match or an infered allele for one genome, while 2 genomes had issues or didn't have the locus. The CDS returned for the first locus is present in another locus, while the same happens for the second locus, from which we may clearly infer that a locus is being overrepresented by this two locus, since both are catching the same CDS.
 
 =============
