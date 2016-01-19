@@ -42,7 +42,7 @@ dependencies:
 * HTSeq
 * BLAST
 
-Given a concatenated ffn file, removes genes that are substring of bigger genes and genes smaller than chosen in the -g parameter. Blasts all the genes against each other and saves the bigger genes, removing the smaller genes with a 0.6>BSR
+Given a concatenated ffn file, removes genes that are substring of bigger genes and genes with DNA sequences smaller than chosen in the -g parameter. Blasts all the genes against each other and saves the bigger genes, removing the smaller genes with a 0.6>BSR (BSR calculated according to the original [paper](https://peerj.com/articles/332/) )
 
 	% CreateSchema.py -i allffnfile.fasta -g 200
 
