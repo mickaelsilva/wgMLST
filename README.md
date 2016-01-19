@@ -31,7 +31,8 @@ How to perform a complete wgMLST:
 5. Run the allelecall script (local or cluster version) using the list files created at 3. and 4.
 6. Run the whichRepeatedLoci.py over the contigsInfo.txt output from step 5.
 7. Run the XpressGetCleanLoci4Phyloviz.py using the outputs from 5. and 6.
-8. (optional) Use the testQualityGenomes2.py script to reach/analyze the core genome for the used genomes
+8. Use [phyloviz software] (http://www.phyloviz.net/) to build trees based on the profiles generated or the [online tool] (https://node.phyloviz.net/)
+9. (optional) Use the testQualityGenomes2.py script to reach/analyze the core genome for the used genomes and re-do step 7
 
 =============
 #CreateSchema.py
