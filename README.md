@@ -26,7 +26,7 @@ How to perform a complete wgMLST:
 
 1. Concatenate gene sequences in a single fasta file. You can use the .ffn files as source of genes sequences available [here] (http://ftp.ncbi.nih.gov/genomes/archive/old_genbank/Bacteria/)
 2. Run CreateSchema.py over the concatenated single fasta file, save the gene .fasta files inside a new "genes" folder
-3. Create a list .txt file containing one gene file per line with full paths (you can use this bash line `find /home/<path>/SchemaFolder/* > listgenes.txt`
+3. Create a list .txt file containing one gene file per line with full paths (you can use this bash line `find /home/.../SchemaFolder/* > listgenes.txt`
 4. Create a list .txt file containing one draft genome file per line with full paths (similar to 3.)
 5. Run the allelecall script (local or cluster version) using the list files created at 3. and 4.
 6. Run the whichRepeatedLoci.py over the contigsInfo.txt output from step 5.
@@ -53,12 +53,12 @@ Given a concatenated ffn file, removes genes that are substring of bigger genes 
 Output:
 
 * proteins.fasta containing the transaltion of all the genes from the given ffn file, without substring genes
-* x.fasta large set of .fasta files, 1 per gene
+* x.fasta large set of .fasta files, 1 file per gene
 
 
 
 =============
-##alleleCalling_ORFbased_protein_main2_local.py (local allele calling, uses the maximum number of local cores - 2)
+##alleleCalling_ORFbased_protein_main2_local.py (local allele calling, uses the maximum number of local cores minus 2)
 
 Given a list of genomes and a list of alleles, the program will perform an allele call using the defined alleles as probes
 

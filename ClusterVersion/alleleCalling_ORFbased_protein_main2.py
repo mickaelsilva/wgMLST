@@ -6,12 +6,10 @@ import os
 import argparse
 from CommonFastaFunctions import runBlastParser
 import time
+import drmaa
 import pickle
 import shutil
-import multiprocessing
-import runProdigal_local as rp
-import Create_Genome_Blastdb_local as CreateDb
-import callAlleles_protein2_local as callAlleles
+
 
 def reverseComplement(strDNA):
 
@@ -27,23 +25,27 @@ def translateSeq(DNASeq):
 	seq=DNASeq
 	try:
 		myseq= Seq(seq)
+		#print myseq
 		protseq=Seq.translate(myseq, table=11,cds=True)
 	except:
 		try:
 			seq=reverseComplement(seq)
 			myseq= Seq(seq)
+			#print myseq
 			protseq=Seq.translate(myseq, table=11,cds=True)
 						
 		except:
 			try:
 				seq=seq[::-1]
 				myseq= Seq(seq)
+				#print myseq
 				protseq=Seq.translate(myseq, table=11,cds=True)
 			except:
 				try:
 					seq=seq[::-1]							
 					seq=reverseComplement(seq)
 					myseq= Seq(seq)
+					#print myseq
 					protseq=Seq.translate(myseq, table=11,cds=True)
 				except Exception as e:
 					print "translated error"
@@ -98,13 +100,14 @@ def loci_translation (genesList,listOfGenomes2):
 # ================================================ MAIN ================================================ #
 
 def main():
-			
+	
+	print(os.path.dirname(os.path.abspath(__file__)))
+	
 	parser = argparse.ArgumentParser(description="This program screens a set of genes in a fasta file.")
 	parser.add_argument('-i', nargs='?', type=str, help='List of genome files (list of fasta files)', required=True)
 	parser.add_argument('-g', nargs='?', type=str, help='List of genes (fasta)', required=True)
 	parser.add_argument('-o', nargs='?', type=str, help="Name of the output files", required=True)
 	parser.add_argument('-p', nargs='?', type=str, help="Path to prodigal exec file", required=True)
-	
 
 	args = parser.parse_args()
 	
@@ -112,7 +115,9 @@ def main():
 	genes = args.g
 	prodigalPath = args.p
 
-
+		
+	
+	
 	print ("Starting Script at : "+time.strftime("%H:%M:%S-%d/%m/%Y"))
 	
 	
@@ -132,13 +137,11 @@ def main():
 
 	fp.close()
 	
-	#translate the loci
 	genepath,basepath,lGenesFiles,argumentsList=loci_translation (genes,listOfGenomes)
-	
+
 	if len(argumentsList) ==0:
 		print "ERROR! AT LEAST ONE GENE FILE MUST CONTAIN AN ALLELE REPRESENTING A CDS"
 		raise ValueError('ERROR! AT LEAST ONE GENE FILE MUST CONTAIN AN ALLELE REPRESENTING A CDS')
-	
 		
 	# ------------------------------------------------- #
 	#           RUN PRODIGAL OVER ALL GENOMES           #
@@ -151,20 +154,26 @@ def main():
 
 	totgenomes= len(listOfGenomes)
 	
+
 	joblist =[]
-	
-	#Prodigal run on the genomes, one genome per core using n-2 cores (n number of cores)
-	
-	pool = multiprocessing.Pool(multiprocessing.cpu_count()-2)
-	for genome in listOfGenomes:
-		pool.apply_async(rp.main, args=(str(genome),basepath,prodigalPath))
+	with drmaa.Session() as s:
+		for genome in listOfGenomes:
+			jt = s.createJobTemplate()
+			jt.remoteCommand = os.path.join(os.getcwd(), 'runProdigal.py')
+			jt.args = [str(genome),basepath]
+			jt.joinFiles=True
+			jt.nativeSpecification='-V'
+			jobid = s.runJob(jt)
+			joblist.append(jobid)
+			with open("jobsid.txt","a") as f:
+				f.write(str(genome)+"\n"+str(jobid))
+			print('Your job has been submitted with ID %s' % jobid)
 
-	pool.close()
-	pool.join()
-    
+			s.deleteJobTemplate(jt)
+		s.synchronize(joblist, drmaa.Session.TIMEOUT_WAIT_FOREVER, True)
 
+	
 	print ("Finishing Prodigal at : "+time.strftime("%H:%M:%S-%d/%m/%Y"))
-	
 	
 	#---CDS to protein---#
 	listOFProt=[]
@@ -172,6 +181,7 @@ def main():
 	
 	i = 0
 	j=0
+	
 	
 	#translate the genome CDSs, load them into dictionaries and fasta files to be used further ahead
 	for genomeFile in listOfGenomes:
@@ -192,7 +202,6 @@ def main():
 		
 		i+=1
 		for contigTag,value in currentCDSDict.iteritems():
-
 			for protein in value:
 				try:
 					seq= currentGenomeDict[ contigTag ][ protein[0]:protein[1] ].upper()
@@ -217,40 +226,55 @@ def main():
 			
 	
 	print ("Starting Genome Blast Db creation at : "+time.strftime("%H:%M:%S-%d/%m/%Y"))
-
+	
 	#creation of the Databases for each genome, one genome per core using n-2 cores (n number of cores)
-	
-	pool = multiprocessing.Pool(multiprocessing.cpu_count()-2)
-	for genomeFile in listOfGenomes:
-		filepath=os.path.join(basepath,str(os.path.basename(genomeFile))+"_Protein.fasta")
-		os.makedirs(os.path.join(basepath,str(os.path.basename(genomeFile)) ))
-		
-		pool.apply_async(CreateDb.main, args=(filepath,os.path.join(basepath,str(os.path.basename(genomeFile)) ),str(os.path.basename(genomeFile)),False ))
 
-	pool.close()
-	pool.join()
 	
+	with drmaa.Session() as s:
+		for genomeFile in listOfGenomes:
+			
+			filepath=os.path.join(basepath,str(os.path.basename(genomeFile))+"_Protein.fasta")
+			os.makedirs(os.path.join(basepath,str(os.path.basename(genomeFile)) ))
+			
+			jt = s.createJobTemplate()
+			jt.remoteCommand = os.path.join(os.getcwd(), 'Create_Genome_Blastdb.py')
+			jt.args = [filepath,os.path.join(basepath,str(os.path.basename(genomeFile)) ),str(os.path.basename(genomeFile)) ]
+			jt.joinFiles=True
+			jt.nativeSpecification='-V'
+			jobid = s.runJob(jt)
+			joblist.append(jobid)
+			with open("jobsid.txt","a") as f:
+				f.write(str(genomeFile)+"\n"+str(jobid))
+			print('Your job has been submitted with ID %s' % jobid)
 
+			s.deleteJobTemplate(jt)
+		s.synchronize(joblist, drmaa.Session.TIMEOUT_WAIT_FOREVER, True)
+	
 	
 	print
 	print ("Starting Allele Calling at : "+time.strftime("%H:%M:%S-%d/%m/%Y"))
 	
-
 	# Run the allele call, one gene per core using n-2 cores (n number of cores)
+
+
 	totloci= len(argumentsList)
-	
+	joblist =[]
+	with drmaa.Session() as s:
+		for argList in argumentsList:
+			jt = s.createJobTemplate()
+			jt.remoteCommand = os.path.join(os.getcwd(), 'callAlleles_protein2.py')
+			jt.args = [str(argList),basepath]
+			jt.joinFiles=True
+			jt.nativeSpecification='-V'
+			jobid = s.runJob(jt)
+			joblist.append(jobid)
+			with open("jobsid.txt","a") as f:
+				f.write(str(argList)+"\n"+str(jobid))
+			print('Your job has been submitted with ID %s' % jobid)
 
-	
-	pool = multiprocessing.Pool(multiprocessing.cpu_count()-2)
-	for argList in argumentsList:
+			s.deleteJobTemplate(jt)
+		s.synchronize(joblist, drmaa.Session.TIMEOUT_WAIT_FOREVER, True)
 
-		pool.apply_async(callAlleles.main, args=(str(argList),basepath))
-
-	pool.close()
-	pool.join()
-	
-
-	
 	
 	output=[]
 	for gene in lGenesFiles:
@@ -268,7 +292,7 @@ def main():
 
 
 	print ("Finished Allele Calling at : "+time.strftime("%H:%M:%S-%d/%m/%Y"))
-
+	
 	#delete all temp files
 	shutil.rmtree(basepath)
 	
@@ -286,7 +310,6 @@ def main():
 		
 	print "\nWriting output files\n"
 	args.o = '/' + args.o
-	
 	
 	#wrapping up the results into a matrix and save in a file
 	try:

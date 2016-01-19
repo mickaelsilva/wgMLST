@@ -4,7 +4,7 @@ import sys
 from Bio.Seq import Seq
 from Bio.Blast.Applications import NcbiblastnCommandline
 from Bio.Blast.Applications import NcbiblastpCommandline
-from Counter import Counter 		# --- Counter.py from python3 is needed to run this script --- #
+from Counter import Counter 
 import os
 import argparse
 from CommonFastaFunctions import Create_Blastdb
@@ -46,7 +46,6 @@ def getBlastScoreRatios(genefile,basepath,doAll):
 
 				# --- get BLAST score ratio --- #
 				cline = NcbiblastpCommandline(query=proteinfastaPath, db=Gene_Blast_DB_name, evalue=0.001, out=blast_out_file, outfmt=5)
-				#print cline
 				allelescore=0
 			
 				blast_records = runBlastParser(cline,blast_out_file, alleleProt)
@@ -71,14 +70,13 @@ def getBlastScoreRatios(genefile,basepath,doAll):
 				geneScorePickle=os.path.abspath(genefile)+'_bsr.txt'
 				with open(geneScorePickle,'rb') as f:
 					var = pickle.load(f)
-
 					allelescores=var[1]
 				
 	proteinfastaPath=os.path.join(basepath,str(os.path.basename(genefile)+'_protein.fasta'))
 	with open(proteinfastaPath, "wb") as f:
 			f.write(alleleAllProt)
 			
-
+			
 	return int(alleleI),allelescores,alleleList
 	
 def reDogetBlastScoreRatios(genefile,basepath,alleleI,allelescores2,newGene_Blast_DB_name,alleleList2,picklepath):
@@ -90,15 +88,12 @@ def reDogetBlastScoreRatios(genefile,basepath,alleleI,allelescores2,newGene_Blas
 	alleleI+=1
 		
 	proteinfastaPath=genefile
-	#print proteinfastaPath
 	
 	print ("Re-starting Blast alleles at : "+time.strftime("%H:%M:%S-%d/%m/%Y"))
 	
 	blast_out_file2 = os.path.join(basepath,'blastdbs/temp.xml')
 
-		# --- get BLAST score ratio --- #
 	cline = NcbiblastpCommandline(query=proteinfastaPath, db=newGene_Blast_DB_name, evalue=0.001, out=blast_out_file2, outfmt=5)
-
 	allelescore=0
 	blast_records = runBlastParser(cline,blast_out_file2, proteinfastaPath)
 	
@@ -113,6 +108,7 @@ def reDogetBlastScoreRatios(genefile,basepath,alleleI,allelescores2,newGene_Blas
 			for match in alignment.hsps:
 				allelescores2.append(int(match.score))
 				
+
 	var=[alleleI,allelescores2]
 	with open(picklepath,'wb') as f:
 		currentCDSDict = pickle.dump(var, f)
@@ -164,9 +160,13 @@ def translateSeq(DNASeq):
 # ======================================================== #
 #            Allele calling and classification             #
 # ======================================================== #
-def main(input_file,temppath):
+def main():
 	print ("Starting script at : "+time.strftime("%H:%M:%S-%d/%m/%Y"))
-	
+	try:
+		input_file = sys.argv[1]
+		temppath = sys.argv[2]
+	except IndexError:
+		print "usage: list_pickle_obj"
 
 	argumentList=[]
 	with open(input_file,'rb') as f:
@@ -175,7 +175,6 @@ def main(input_file,temppath):
 	geneFile = argumentList[0]
 	genomesList = argumentList[1]
 	
-
 	basepath=os.path.join(temppath,os.path.splitext(geneFile)[0])
 	if not os.path.exists(basepath):
 			os.makedirs(basepath)
@@ -192,8 +191,9 @@ def main(input_file,temppath):
 	print ("Getting BSR at : "+time.strftime("%H:%M:%S-%d/%m/%Y"))
 
 	geneScorePickle=os.path.abspath(geneFile)+'_bsr.txt'
-
+	
 	#check if bsr as arealdy been calculated and recalculate it
+
 	if os.path.isfile(geneScorePickle) :
 		
 		alleleI,allelescores,alleleList=getBlastScoreRatios(geneFile,basepath,False)
@@ -208,8 +208,6 @@ def main(input_file,temppath):
 	
 	genomeDict = {}
 	print ("starting allele call at: "+time.strftime("%H:%M:%S-%d/%m/%Y"))
-	
-	
 	for genomeFile in genomesList:
 		print genomeFile
 		bestmatch=[0,0,False,'',0] #score, score ratio, perfectmatch, key name of the DNA sequence string, allele ID
@@ -241,10 +239,9 @@ def main(input_file,temppath):
 
 		proteinfastaPath=os.path.join(basepath,str(os.path.basename(geneFile)+'_protein.fasta'))
 		
-		#blast the genome CDS against the translated locus
 		
+		#blast the genome CDS against the translated locus
 		cline = NcbiblastpCommandline(query=proteinfastaPath, db=Gene_Blast_DB_name, evalue=0.001, out=blast_out_file, outfmt=5)
-
 			
 		blast_records = runBlastParser(cline, blast_out_file, proteinfastaPath)
 		print ("Blasted alleles on genome at : "+time.strftime("%H:%M:%S-%d/%m/%Y"))
@@ -260,7 +257,7 @@ def main(input_file,temppath):
 		
 		if (contador[0])[1] ==1:
 			moda= alleleSizes[0]
-		
+
 		try:
 			
 			# iterate through the blast results
@@ -272,10 +269,9 @@ def main(input_file,temppath):
 					
 					# select the best match
 					for match in alignment.hsps:
-
 						
-						alleleMatchid=str(blast_record.query_id).split("_")[1]					
-
+						alleleMatchid=str(blast_record.query_id).split("_")[1]
+						
 						scoreRatio=float(match.score)/float(allelescores[int(alleleMatchid)-1])
 
 						cdsStrName=((alignment.title).split(" "))[1]
@@ -307,10 +303,9 @@ def main(input_file,temppath):
 						if "N" in DNAstr or "K" in DNAstr or "R" in DNAstr:
 							pass
 							
-						
 						elif(scoreRatio == 1 and bestmatch[2] is False and compare is True):
 							bestmatch=[match.score,scoreRatio,True,cdsStrName,int(alleleMatchid),match,len(AlleleDNAstr)]
-						
+
 						elif(scoreRatio == 1 and match.score>bestmatch[0] and compare is True):
 							bestmatch=[match.score,scoreRatio,True,cdsStrName,int(alleleMatchid),match,len(AlleleDNAstr)]
 
@@ -321,15 +316,13 @@ def main(input_file,temppath):
 							bestmatch=[match.score,scoreRatio,False,cdsStrName,int(alleleMatchid),match,len(AlleleDNAstr)]
 
 						elif(match.score>bestmatch[0] and scoreRatio>0.6 and scoreRatio>bestmatch[1] and bestmatch[2] is False):
-							
 							bestmatch=[match.score,scoreRatio,False,cdsStrName,int(alleleMatchid),match,len(AlleleDNAstr)]
 							
 										
-			print ("Classifying the match at : "+time.strftime("%H:%M:%S-%d/%m/%Y"))	
+			print ("Classifying the match at : "+time.strftime("%H:%M:%S-%d/%m/%Y"))		
 			
-			#if no best match was found it's a Locus Not Found	
+			#if no best match was found it's a Locus Not Found
 			if bestmatch[0]==0 or "N" in AlleleDNAstr or "K" in AlleleDNAstr or "R" in AlleleDNAstr :
-				
 						
 						###################
 						# LOCUS NOT FOUND #
@@ -339,7 +332,6 @@ def main(input_file,temppath):
 					perfectMatchIdAllele.append('LNF')
 					perfectMatchIdAllele2.append('LNF')
 					print "Locus not found, no matches \n"
-					
 				else:
 					resultsList.append('LNFN:-1')
 					perfectMatchIdAllele.append('LNF')
@@ -360,7 +352,7 @@ def main(input_file,temppath):
 				contigname=contigname.split("&")
 				matchLocation=contigname[2]	
 				contigname=contigname[0]	
-
+				print contigname
 				alleleStr=listOfCDS[">"+bestmatch[3]]
 				protSeq,alleleStr,Reversed=translateSeq(alleleStr)
 				
@@ -456,7 +448,7 @@ def main(input_file,temppath):
 						else:
 							perfectMatchIdAllele2.append(str(contigname)+"&"+str(matchLocation)+"&"+"-")
 						resultsList.append('EXC:' + str(bestmatch[4]) )
-			
+
 			
 			# if match with BSR >0.6 and not equal DNA sequences
 			else:
@@ -477,7 +469,7 @@ def main(input_file,temppath):
 				alleleStr=listOfCDS[">"+bestmatch[3]]
 				protSeq,alleleStr,Reversed=translateSeq(alleleStr)
 				
-
+				
 				rightmatchContig=bestMatchContigLen-int(matchLocation[1])	
 				leftmatchContig=int(matchLocation[0])
 				
@@ -501,12 +493,12 @@ def main(input_file,temppath):
 						###########################
 				
 				
+				
 				if leftmatchContig<leftmatchAllele and 	rightmatchContig < rightmatchAllele:
 				
 					resultsList.append('LOTSC:-1')
 					perfectMatchIdAllele.append('LOTSC')
 					perfectMatchIdAllele2.append('LOTSC')
-
 					print "Locus is bigger than the contig \n"
 				
 				elif leftmatchContig<leftmatchAllele:
@@ -539,7 +531,8 @@ def main(input_file,temppath):
 				
 				elif len(alleleStr) < moda-(moda*0.2):
 					
-
+					print moda
+					print alleleStr
 					resultsList.append('ASM')
 					perfectMatchIdAllele.append('ASM')
 					perfectMatchIdAllele2.append('ASM')
@@ -571,8 +564,6 @@ def main(input_file,temppath):
 					fG = open( geneFile, 'a' )
 					fG.write(appendAllele)
 						
-					
-
 					fG.write( alleleStr + '\n')
 					fG.close()
 					
@@ -587,7 +578,6 @@ def main(input_file,temppath):
 					
 					# --- remake blast DB and recalculate the BSR for the locus --- #
 					alleleList.append(alleleStr)
-
 					print os.path.join(basepath,str(os.path.basename(geneFile)+'_protein.fasta'))
 					genefile2= os.path.join(basepath,str(os.path.basename(geneFile)+'_protein2.fasta'))
 					Gene_Blast_DB_name2 = Create_Blastdb( genefile2, 1, True )
@@ -604,13 +594,11 @@ def main(input_file,temppath):
 			perfectMatchIdAllele.append("ERROR")
 			resultsList.append('ERROR')  
 		
-
+	
 	final =	(resultsList,perfectMatchIdAllele)	
-
 	print ("Finished allele calling at : "+time.strftime("%H:%M:%S-%d/%m/%Y"))
 	filepath=os.path.join(temppath , os.path.basename(geneFile)+"_result.txt")
 	filepath2=os.path.join(temppath , os.path.basename(geneFile)+"_result2.txt")
-
 	with open(filepath, 'wb') as f:
 		pickle.dump(final, f)
 	with open(filepath2, 'wb') as f:
