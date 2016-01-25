@@ -316,6 +316,7 @@ def main():
 	removedsize=0
 	totalgenes=0
 	rest=0
+	concatenatedFile=''
 	for contig in g_fp:
 		totalgenes+=1
 		name = contig.name+" "+contig.descr
@@ -329,6 +330,7 @@ def main():
 				with open(pathfiles+namefile+".fasta", "wb") as f:
 					f.write(">1\n"+contig.seq+"\n")
 				rest+=1	
+				concatenatedFile+=">"+namefile+"\n"+contig.seq+"\n"
 			else:
 				removedsize+=1
 		else:
@@ -340,6 +342,9 @@ def main():
 	print "Removed %s because of size " % str(removedsize)
 	print "%s Scheme genes " % str(rest)
 	print "total genes:" + str(totalgenes)
+	
+	with open (pathfiles+"concatenated.fasta","wb") as f:
+		f.write (concatenatedFile)
 	
 	
 if __name__ == "__main__":
