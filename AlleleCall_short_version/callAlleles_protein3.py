@@ -175,6 +175,7 @@ def main():
 		argumentList = pickle.load(f)
 	
 	geneFile = argumentList[0]
+	print "Using gene: "+str(geneFile)
 	shortgeneFile= os.path.join(os.path.dirname(argumentList[0]),"short",os.path.basename(argumentList[0]))
 	shortgeneFile= shortgeneFile.replace(".fasta","_short.fasta")
 	genomesList = argumentList[1]
@@ -184,7 +185,6 @@ def main():
 			os.makedirs(basepath)
 
 	gene_fp = HTSeq.FastaReader(geneFile)
-	alleleI = 0
 	
 	fullAlleleList=[]
 	alleleI=0
@@ -298,9 +298,6 @@ def main():
 						#check if DNA sequence is already defined as an allele
 						
 						
-								
-						
-						
 						
 						if scoreRatio>0.6:
 							locationcontigs.append(cdsStrName)
@@ -315,14 +312,6 @@ def main():
 									compare=True
 									alleleMatchid=(int(fullAlleleList.index(DNAstr)))+1
 							
-						"""try:
-							print "comparison is:"
-							print compare
-							print fullAlleleList
-							print
-							print DNAstr
-						except Exception as e:
-							print e"""
 						
 						notCDS=False
 						try:
@@ -631,7 +620,7 @@ def main():
 						
 						# --- remake blast DB and recalculate the BSR for the locus --- #
 						alleleList.append(alleleStr)
-						#print geneTransalatedPath
+
 						genefile2= geneTransalatedPath2
 						Gene_Blast_DB_name2 = Create_Blastdb( genefile2, 1, True )
 						print ("Re-calculating BSR at : "+time.strftime("%H:%M:%S-%d/%m/%Y"))

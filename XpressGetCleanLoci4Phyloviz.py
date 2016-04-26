@@ -1,8 +1,60 @@
+import sys
 import csv
 import numpy as np
 from numpy import array
 import argparse
 import collections
+from collections import OrderedDict
+#import HTSeq
+import matplotlib.pyplot as plt
+
+def presence (d3):	
+
+	d2c=np.copy(d3)
+	
+	#genelist= d2[:1,1:]
+	#print "Warning: all profiles must have same length"
+	#for item in d2c:
+		#print "genome "+str(item[0])+" has a profile length of "+str(len(item))
+	geneslist= d2c[:1,:]
+	genomeslist= d2c[1:,:1]
+	
+	d2c = d2c[1:,:]
+	
+	row=0
+	while row<d2c.shape[0]:
+		column=1
+		while column<d2c.shape[1]:
+			try:
+
+				asd=int(d2c[row,column])
+				
+				d2c[row,column]=0
+				
+			except:
+				try:
+					int( (d2c[row,column]).replace ("INF-",""))
+					d2c[row,column]=1
+				except:
+					d2c[row,column]=0
+				
+			column+=1
+		row+=1
+	
+	d2c
+
+	genomeslist=(genomeslist.tolist())
+
+	
+	
+	with open ("presence.txt","wb") as f:
+		
+		f.write (str(geneslist.tolist()))
+
+		for elem in d2c:
+			f.write(str(elem.tolist())+"\n")
+	
+	return True
 
 def clean (inputfile,outputfile,totaldeletedgenes,rangeFloat,toremovegenes):
 	
@@ -14,6 +66,7 @@ def clean (inputfile,outputfile,totaldeletedgenes,rangeFloat,toremovegenes):
 	
 	d2 = array(d)
 	
+	presence (d2)
 	
 	genomeslist= d2[1:,:1]
 	
@@ -48,7 +101,7 @@ def clean (inputfile,outputfile,totaldeletedgenes,rangeFloat,toremovegenes):
 				lnfdel+=1
 				break
 			
-			elif ( "PLOT" in d2[rowid][columnid] or "NIPL" in d2[rowid][columnid] or "LNF" in d2[rowid][columnid] or "LOT" in d2[rowid][columnid]  or "ALM" in d2[rowid][columnid]  or "ASM" in d2[rowid][columnid] or "ERROR" in d2[rowid][columnid]  or "ABM" in d2[rowid][columnid]) or "undefined" in d2[rowid][columnid] or "small match" in d2[rowid][columnid] or "allele incomplete" in d2[rowid][columnid]:	
+			elif ( "PLOT" in d2[rowid][columnid] or "NIPL" in d2[rowid][columnid] or "LNF" in d2[rowid][columnid] or "LOT" in d2[rowid][columnid]  or "ALM" in d2[rowid][columnid]  or "ASM" in d2[rowid][columnid] or "ERROR" in d2[rowid][columnid]  or "ABM" in d2[rowid][columnid]) or "undefined allele" in d2[rowid][columnid] or "small match" in d2[rowid][columnid] or "allele incomplete" in d2[rowid][columnid]:	
 				
 				d2=np.delete(d2, rowid, 0)
 				totaldeletedgenes+=1
@@ -86,7 +139,6 @@ def clean (inputfile,outputfile,totaldeletedgenes,rangeFloat,toremovegenes):
 		rowid+=1
 	
 	
-	
 	d2=d2.T
 	d2=d2.tolist()
 	
@@ -119,7 +171,7 @@ def clean (inputfile,outputfile,totaldeletedgenes,rangeFloat,toremovegenes):
 	#if deleted==0:
 	print str(lnfdel),str(balldel)
 	print "deleted : %s genes" % totaldeletedgenes
-	print "total genes remaining : "+ str(rowid-2)
+	print "total genes remaining : "+ str(rowid)
 	#else:
 		#clean(outputfile,outputfile,totaldeletedgenes,shortGenomeList,genesDirect,rangeFloat)
 	

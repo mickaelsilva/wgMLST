@@ -9,17 +9,25 @@ Dependencies:
 * [Prodigal] (https://github.com/hyattpd/prodigal/releases/) (tested with v. 2.6.0)
 
 
+**Notice**
+
+Previous versions used the full allele list to make a BLAST search over the genomes, increasing exponentially the time cost necessary to perform the allele calling with the growing allele database. 
+To address this issue the allele call script has been modified using now 2 files per locus. One file will store all allelic sequence forms found, while a "short" version of the allele will store only
+new alleles with a significant difference to the closest allele (0.6<BSR<0.7). The short gene form will be used to perform the BLAST search allowing a good time performance allele calling while not losing
+a wide diversity range search.
 
 suggested folder structure:
 
 1. main folder - scripts and txt files
  1. sub folder - genomes - all genomes fasta files
  2. sub folder - genes - all genes fasta files
+	2.1 subfolder - short - all genes short form, extension ends with "_short.fasta"
 
 **Important Notes :**
 - lists of files MUST contain FULL PATH!
 - be sure your fasta files are formated in UNIX, for quick conversion use [dos2unix] (http://linuxcommand.org/man_pages/dos2unix1.html)
 - allele sequence of the gene files must represent a complete Coding Domain Sequence, with starting codon and stop codon according to the [NCBI table 11] (http://www.ncbi.nlm.nih.gov/Taxonomy/Utils/wprintgc.cgi)
+- gene folder must have a subfolder cointaning duplicated gene files for the short form
 
 
 How to perform a complete wgMLST:
@@ -32,10 +40,10 @@ How to perform a complete wgMLST:
 6. Run the whichRepeatedLoci.py over the contigsInfo.txt output from step 5.
 7. Run the XpressGetCleanLoci4Phyloviz.py using the outputs from 5. and 6.
 8. Use [phyloviz software] (http://www.phyloviz.net/) to build trees based on the profiles generated or the [online tool] (https://node.phyloviz.net/)
-9. (optional) Use the testQualityGenomes2.py script to reach/analyze the core genome and re-do step 7
+9. (optional) Use the testQualityGenomes3.py script to reach/analyze the core genome and re-do step 7
 
 =============
-#CreateSchema.py
+#Create Schema
 
 dependencies:
 * biopython
@@ -59,17 +67,21 @@ Output:
 
 
 =============
-##alleleCalling
+##Allele Call
 
 Given a list of genomes and a list of alleles, the program will perform an allele call using the defined alleles as probes. Prodigal is run on the genomes and the genes, ensuring that only complete CDSs are used.
 
-Performing a **local** allele call (uses the maximum number of local cores minus 2, one per gene):
+Performing a **local** or **SUN cluster** allele call (uses the maximum number of local cores minus 2, one per gene):
 
-	% alleleCalling_ORFbased_protein_main2_local.py -i listGenomes.txt -g listGenes.txt -o outputFileName.txt -p /home/user/prodigal/Prodigal-2.60/prodigal
+	% alleleCalling_ORFbased_protein_main3_local.py -i listGenomes.txt -g listGenes.txt -o outputFileName.txt -p /home/user/prodigal/Prodigal-2.60/prodigal
 
-Performing a **cluster** allele call (uses all available cores, one per gene):
+Performing a **SLURM cluster** allele call (uses all available cores, one per gene):
 
-	% alleleCalling_ORFbased_protein_main2.py -i listGenomes.txt -g listGenes.txt -o outputFileName.txt -p /home/user/prodigal/Prodigal-2.60/prodigal
+	% srun -c 32 --mem-per-cpu 4G alleleCalling_ORFbased_protein_main3.py -i listGenomes.txt -g listGenes.txt -o outputFileName.txt -p /home/user/prodigal/Prodigal-2.60/prodigal
+
+`-c` number of CPU
+
+`--mem-per-cpu` memory available per CPU in Gb
 	
 `-i` path to the list of genomes file
 
@@ -84,9 +96,9 @@ short example statistics file:
 * EXC - allele has exact match (100% identity)
 * INF - infered allele with prodigal
 * LNF - locus not found
-* LOT - locus on the tip of the contig
-* PLOT - locus possibly on the tip of the contig (uses the most frequent allele size to compare)
-* NIPL - Non informative paralog locus (two or more good blast matches for the protein)
+* LOT - locus on the tip of the contig (partial match)
+* PLOT - locus possibly on the tip of the contig (CDS match is on the tip of the contig - to be manualy curated)
+* NIPL - Non informative paralog locus (two or more good blast matches (bsr >0.6) for the protein)
 * ALM - allele much larger than gene size mode (match CDS lenght> gene mode length + gene mode length * 0.2)
 * ASM - allele much smaller than gene size mode (match CDS lenght < gene mode length - gene mode length * 0.2)
 
@@ -105,7 +117,7 @@ NC_011586.fna	INF-3	LNF
 NC_011595.fna	3	LNF
 ```
 =============
-## whichRepeatedLoci.py
+## Evaluate overrepresented loci
 
 Using the contigsInfo.txt output from the allele call, check if the same CDS is being called for different locus
 
@@ -116,7 +128,7 @@ Using the contigsInfo.txt output from the allele call, check if the same CDS is 
 short example file output:
 
 * overrepresented - number of times a CDS on this locus as been found in another locus
-* problems - non exact match or infered allele found
+* problems - neither exact match or infered allele found
 
 ```
 gene	overrepresented	problems	total
@@ -144,7 +156,7 @@ Basic usage:
 `-r` (optional) list of genes to remove, one per line, advised to use the detected overrepresented genes from whichRepeatedLoci.py
 
 =============
-## testQualityGenomes2.py
+## Evaluate genome quality
 
 Dependencies:
 * [matplotlib](http://matplotlib.org/)

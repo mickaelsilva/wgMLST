@@ -343,6 +343,8 @@ def main():
 				resultsList.append('NIPL')            
 				perfectMatchIdAllele.append('NIPL')
 				perfectMatchIdAllele2.append('NIPL')
+				for elem in locationcontigs:
+					print elem
 				
 			
 			#in case the DNA match sequence equal to the DNA sequence of the comparing allele
@@ -484,8 +486,8 @@ def main():
 				
 				# get extra space to the right and left between the allele and match and check if it's still inside the contig
 				
-				rightmatchAllele=geneLen-(int(match.query_end)*3)	
-				leftmatchAllele=(int(match.query_start)*3)
+				rightmatchAllele=geneLen-((int(match.query_end)+1)*3)	
+				leftmatchAllele=((int(match.query_start)-1)*3)
 				
 
 						###########################
@@ -499,6 +501,10 @@ def main():
 					resultsList.append('LOTSC:-1')
 					perfectMatchIdAllele.append('LOTSC')
 					perfectMatchIdAllele2.append('LOTSC')
+					print match
+					print contigname
+					print geneFile
+					print leftmatchAllele,rightmatchAllele
 					print "Locus is bigger than the contig \n"
 				
 				elif leftmatchContig<leftmatchAllele:
@@ -507,7 +513,10 @@ def main():
 					resultsList.append('LOT3:-1')
 					perfectMatchIdAllele.append('LOT3')
 					perfectMatchIdAllele2.append('LOT3')
-					
+					print match
+					print contigname
+					print geneFile
+					print leftmatchAllele,rightmatchAllele
 					print "Locus is on the 3' tip of the contig \n"
 				
 				
@@ -516,7 +525,10 @@ def main():
 					resultsList.append('LOT5:-1')
 					perfectMatchIdAllele.append('LOT5')
 					perfectMatchIdAllele2.append('LOT5')
-
+					print match
+					print contigname
+					print geneFile
+					print leftmatchAllele,rightmatchAllele
 					print "Locus is on the 5' tip of the contig \n"
 				
 				
